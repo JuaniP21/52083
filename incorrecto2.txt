@@ -1,0 +1,6 @@
+if ("inicio") {
+    printf("Todo bien");
+} else {
+    printf("Todo mal");
+}
+return
