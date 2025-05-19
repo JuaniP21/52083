@@ -1,0 +1,7 @@
+printf("Inicio del programa")
+if ("condicion") {
+    printf("Falta punto y coma");
+} else {
+    printf("Esto debería funcionar");
+}
+return;
