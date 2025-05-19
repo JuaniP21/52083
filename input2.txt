@@ -1,0 +1,8 @@
+printf("Inicio del programa");
+if ("usuario logueado") {
+    printf("Bienvenido, usuario!");
+    printf("Cargando datos...");
+} else {
+    printf("Acceso denegado");
+}
+return;
