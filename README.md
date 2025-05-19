@@ -18,7 +18,7 @@ Este proyecto implementa un analizador léxico y sintáctico para un sublenguaje
 4. **Árbol sintáctico:** genera y muestra visualmente (en consola) el árbol del análisis sintáctico.
 5. **Interpretación:** traduce el código válido a JavaScript y lo ejecuta (en tiempo real).
 
-# EJECUCIÓN
+# Ejecución
 
 Colocar el código a analizar en input.txt.
 
@@ -31,6 +31,5 @@ Se incluyen 4 archivos con código de ejemplo:
 
 2 cadenas válidas (sintaxis correcta). input.txt e input2.txt
 2 cadenas inválidas (errores de sintaxis). incorrecto.txt e incorrecto2.txt
-
   
 
