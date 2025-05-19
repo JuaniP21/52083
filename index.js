@@ -1,62 +1,39 @@
-import CalculatorLexer from "./generated/CalculatorLexer.js";
-import CalculatorParser from "./generated/CalculatorParser.js";
-import { CustomCalculatorListener } from "./CustomCalculatorListener.js";
-import { CustomCalculatorVisitor } from "./CustomCalculatorVisitor.js";
-import antlr4, { CharStreams, CommonTokenStream, ParseTreeWalker } from "antlr4";
-import readline from 'readline';
+import antlr4 from 'antlr4';
 import fs from 'fs';
+import LenguajeLexer from './generated/LenguajeLexer.js';
+import LenguajeParser from './generated/LenguajeParser.js';
+import Interpreter from './visitor/Interpreter.js';
 
-async function main() {
-    let input;
+const input = fs.readFileSync('input.txt', 'utf8');
+console.log("📄 Contenido de input.txt:");
+console.log(input);
+console.log("\n");
 
-    // Intento leer la entrada desde el archivo input - en forma sincrona.
-    try {
-        input = fs.readFileSync('input.txt', 'utf8');
-    } catch (err) {
-        // Si no es posible leer el archivo, solicitar la entrada del usuario por teclado
-        input = await leerCadena(); // Simula lectura síncrona
-        console.log(input);
-    }
+const chars = new antlr4.InputStream(input);
+const lexer = new LenguajeLexer(chars);
+const tokens = new antlr4.CommonTokenStream(lexer);
 
-    // Proceso la entrada con el analizador e imprimo el arbol de analisis en formato texto
-    let inputStream = CharStreams.fromString(input);
-    let lexer = new CalculatorLexer(inputStream);
-    let tokenStream = new CommonTokenStream(lexer);
-    let parser = new CalculatorParser(tokenStream);
-    let tree = parser.prog();
-    
-    // Verifico si se produjeron errores
-    if (parser.syntaxErrorsCount > 0) {
-        console.error("\nSe encontraron errores de sintaxis en la entrada.");
-    } 
-    else {
-        console.log("\nEntrada válida.");
-        const cadena_tree = tree.toStringTree(parser.ruleNames);
-        console.log(`Árbol de derivación: ${cadena_tree}`);
+console.log("⚙️ Lexer creado");
 
-        // Utilizo un listener y un walker para recorrer el arbol e indicar cada vez que reconoce una sentencia (stat)
-        //const listener = new CustomCalculatorListener();
-        // ParseTreeWalker.DEFAULT.walk(listener, tree);
+// Creamos el parser ANTES de imprimir los tokens
+const parser = new LenguajeParser(tokens);
 
-        // Utilizo un visitor para visitar los nodos que me interesan de mi arbol
-        const visitor = new CustomCalculatorVisitor();
-        visitor.visit(tree);   
-    }
-}
+// Tabla de tokens
+tokens.fill();
+console.log(`Cantidad de tokens: ${tokens.tokens.length}\n`);
+console.log("📜 Tabla de Tokens:");
 
-function leerCadena() {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
+tokens.tokens.forEach(token => {
+  const typeName = parser.symbolicNames[token.type] || "UNKNOWN";
+  console.log(`Tipo: ${typeName.padEnd(15)} Texto: "${token.text}"`);
+});
 
-    return new Promise(resolve => {
-        rl.question("Ingrese una cadena: ", (answer) => {
-            rl.close();
-            resolve(answer);
-        });
-    });
-}
+console.log("\n🌳 Árbol de análisis sintáctico:");
 
-// Ejecuta la función principal
-main();
+const tree = parser.programa();
+console.log(tree.toStringTree(parser.ruleNames));
+
+// Interpretar
+console.log("\n🚀 Resultado del intérprete:");
+const interpreter = new Interpreter();
+interpreter.visit(tree);
